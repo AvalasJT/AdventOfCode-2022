@@ -7,10 +7,7 @@ with open('input.txt', 'r') as f:
         else:   #line break -> new Elv
             Elves.append([])
 
-SumCal = []        
-for E in Elves:
-    SumCal.append(sum(E))
-
+SumCal = [sum(E) for E in Elves]        
 print(max(SumCal))
 
 #Part 2
