@@ -1,9 +1,9 @@
 # Part 1 
-n_stacks = 9 # dynamisch auslesen?
-
-stacks1 = [[] for x in range(n_stacks)] # deque statt list.. schneller für Part 1 aber unpraktisch für Part 2
 moves = []
 with open('input.txt', 'r') as f:
+    n_stacks = int(len(f.readline())/4) # könnte noch ein Prob sein, da die 4 hardcoded ist und die letzte Reihe die Stacknummern enthalten und ab 10 zweistellig sind.
+    stacks1 = [[] for x in range(n_stacks)] # deque statt list.. schneller für Part 1 aber unpraktisch für Part 2
+    f.seek(0) # go back to first line
     for l in f:
         if l == '\n': continue # seperator between stack graph and moves
         if not l[0] =='m': # still in stack area            
