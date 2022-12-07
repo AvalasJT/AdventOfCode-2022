@@ -5,44 +5,29 @@ class directory:
         self.parent_dir = parent
         self.subdirs = []
         self.files = []
-    
-    def Get_Name(self):
-        return self.name
-    
-    def Get_Parant(self):
-        return self.parent_dir
-
-    def Get_Subdirs(self):
-        return self.subdirs
 
     def Add_Subdir(self, subdir_name):
-        if not subdir_name in [subdir.Get_Name() for subdir in self.subdirs]:
+        if not subdir_name in [subdir.name for subdir in self.subdirs]:
             self.subdirs.append(directory(subdir_name, self))
         else:
             print('Subdir', subdir_name, 'already exists in', self.name)
 
     def Add_File(self, file_name, file_size):
-        if not file_name in [file.Get_Name() for file in self.files]:
+        if not file_name in [file.name for file in self.files]:
             self.files.append(file(file_name, file_size))
         else:
             print('File', file_name, 'already exists in', self.name)
             
     def Get_Subdir(self, subdir_name):
         for subdir in self.subdirs:
-            if subdir.Get_Name() == subdir_name: return subdir
+            if subdir.name == subdir_name: return subdir
         print('Subdir', subdir_name, 'not found.')
         return self
     
-    def ls(self):
-        print([subdir.Get_Name() for subdir in self.subdirs])
-        print([file.Get_Name() for file in self.files])
-
     def Get_Size(self):
         sum_size = 0
-        if len(self.subdirs) > 0:
-            sum_size += sum([subdir.Get_Size() for subdir in self.subdirs])
-        if len(self.files) > 0:
-            sum_size += sum([file.Get_Size() for file in self.files])
+        if len(self.subdirs) > 0: sum_size += sum([subdir.Get_Size() for subdir in self.subdirs])
+        if len(self.files) > 0: sum_size += sum([file.size for file in self.files])
         return sum_size
 
 
@@ -53,24 +38,17 @@ class file:
     def __init__(self, file_name, file_size):
         self.name = file_name
         self.size = file_size
-        
-    def Get_Name(self):
-        return self.name
-    
-    def Get_Size(self):
-        return self.size
-
 
 
 def search_smaller_100k(sdir, sum_s):
     if sdir.Get_Size() <= 100000: sum_s[0] += sdir.Get_Size()
-    for d in sdir.Get_Subdirs():
+    for d in sdir.subdirs:
         search_smaller_100k(d, sum_s)
 
 # For Part 2
 def search_smallest_above(sdir, needed, smallest):
-    if sdir.Get_Size() >= needed and sdir.Get_Size() < smallest[0]: smallest[0] = sdir.Get_Size()
-    for d in sdir.Get_Subdirs():
+    if needed < sdir.Get_Size() < smallest[0]: smallest[0] = sdir.Get_Size()
+    for d in sdir.subdirs:
         search_smallest_above(d, needed, smallest)
     
 # Prepare first directory    
@@ -84,7 +62,7 @@ with open('input.txt', 'r') as f:
         if com[0] == '$' and com[1] == 'cd' and com[2] != '..':
             cur_dir = cur_dir.Get_Subdir(com[2])
         elif com[0] == '$' and com[1] == 'cd' and com[2] == '..':
-            cur_dir = cur_dir.Get_Parant()
+            cur_dir = cur_dir.parent_dir
         elif com[0] == '$' and com[1] == 'ls':
             continue
         elif com[0] == 'dir':
