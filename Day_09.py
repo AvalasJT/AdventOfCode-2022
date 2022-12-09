@@ -11,8 +11,7 @@ def calc_n_rope(n):
         for _ in range(n):
             rope[0] = tuple(map(lambda x, y: x + y, rope[0], direction[d]))
             for i in range(1, len(rope)):
-                k1x, k1y = rope[i-1]
-                k2x, k2y = rope[i]
+                (k1x, k1y), (k2x, k2y) = rope[i-1], rope[i]
                 if abs(k1x-k2x) > 1 or abs(k1y-k2y) > 1:
                     k2x += 0 if k1x == k2x else int((k1x-k2x)/abs(k1x-k2x))
                     k2y += 0 if k1y == k2y else int((k1y-k2y)/abs(k1y-k2y))
