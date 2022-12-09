@@ -8,9 +8,8 @@ def calc_n_rope(n):
     rope = [(0,0)]*n
     visited = set([(0,0)])
     for [d, n] in moves:
-        dx, dy = direction[d]
         for _ in range(n):
-            rope[0] = (rope[0][0]+dx, rope[0][1]+dy)
+            rope[0] = tuple(map(lambda x, y: x + y, rope[0], direction[d]))
             for i in range(1, len(rope)):
                 k1x, k1y = rope[i-1]
                 k2x, k2y = rope[i]
