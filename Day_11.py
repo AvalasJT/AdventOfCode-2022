@@ -4,8 +4,7 @@ def run_monkey_rounds(n, div_t_f):
     Monkeys = []
     
     class Monkey():
-        def __init__(self, ID, items, operation, test_div_number, true_dest, false_dest):
-            self.ID = ID
+        def __init__(self, items, operation, test_div_number, true_dest, false_dest):
             self.items = items
             self.operation = lambda x: eval(operation)
             self.test_div_number = test_div_number
@@ -35,7 +34,7 @@ def run_monkey_rounds(n, div_t_f):
                 common_base *= test_div_number
                 true_dest = int(f.readline().strip().split()[5])
                 false_dest = int(f.readline().strip().split()[5])
-                Monkeys.append(Monkey(int(l[1][:-1]), items, operation, test_div_number, true_dest, false_dest))
+                Monkeys.append(Monkey( items, operation, test_div_number, true_dest, false_dest))
     
     for _ in range(n):
         for Monkey in Monkeys:
