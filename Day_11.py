@@ -18,7 +18,7 @@ def run_monkey_rounds(n, div_t_f):
                 self.inspected += 1
                 new = int(self.operation(item) / 3) if div_t_f else int(self.operation(item))
                 new = int(new % common_base)
-                if new%self.test_div_number == 0:
+                if new % self.test_div_number == 0:
                     Monkeys[self.true_dest].items.append(new)
                 else:
                     Monkeys[self.false_dest].items.append(new)
