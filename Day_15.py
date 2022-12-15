@@ -8,7 +8,6 @@ with open(file, 'r') as f:
         sx, sy, bx, by = l.strip().replace('Sensor at x=', '').replace('y=', '').replace(': closest beacon is at x=', ',').replace('y=', '').split(',')
         SB[(int(sx),int(sy))] = (int(bx),int(by))
 
-
 def fuse(arr):
     changed = True
     while changed:
