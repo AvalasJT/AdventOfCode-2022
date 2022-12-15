@@ -3,10 +3,12 @@
 n_y, n_crop, file = 2000000, 4000000, 'input.txt' # Data
 
 SB = {}
+beacons_in_target_row = []
 with open(file, 'r') as f:
     for l in f:
         sx, sy, bx, by = l.strip().replace('Sensor at x=', '').replace('y=', '').replace(': closest beacon is at x=', ',').replace('y=', '').split(',')
         SB[(int(sx),int(sy))] = (int(bx),int(by))
+        if int(by) == n_y and not [int(bx),int(by)] in beacons_in_target_row: beacons_in_target_row.append([int(bx),int(by)])
 
 def fuse(arr):
     changed = True
@@ -37,10 +39,9 @@ def find_blocks(y):
     return blocks
 
 blocks = find_blocks(n_y)
+print(sum([x2-x1+1 for (x1,x2) in blocks]) - len(beacons_in_target_row))
 
-print(sum([x2-x1 for (x1,x2) in blocks]))
-
-# Part 2 ... soo slow :(
+#Part 2 ... soo slow :(
 def crop(arr, n):
     for i in range(len(arr)):
         for j in [0,1]:
