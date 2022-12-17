@@ -1,25 +1,14 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 15 02:19:53 2022
-
-@author: Jonas
-"""
-
 # Part 1
 import heapq
 from copy import deepcopy
 
 import time
-start_time = time.time()
-
-
 
 valves = []
 ways = {}
 tunnels = {}
-estimates = {}
-calculates = {}
-max_gas_so_far = [0]
+parallel_estimates = {}
+parallel_calculates = {}
 
 with open('input.txt', 'r') as f:
     for l in f:
@@ -75,62 +64,7 @@ def get_way(a, b): # Mini A*
         return counter
     else: # Kein Weg gefunden
         return None
-    
-def estimate_max(curr_valve_state, time):
-    if time == 0: return 0
-    valves = deepcopy(curr_valve_state)
-    valves = [x for x in valves if x[2] == 'off' and x[1] > 0]   # get the valves which could be opend
-    if len(valves) == 0: return 0
-    valves.sort(key = lambda x: -x[1]) # sort by most promising one
-    d_key = str(valves)
-    if (d_key, time) in estimates: return estimates[(d_key, time)]
-    if time == 1: return valves[-1][1]
-    max_gas = 0
-    for i,t in enumerate(range(time, 0, -2)):
-        if i >= len(valves): break
-        max_gas += t*valves[i][1]
-    estimates[(d_key, time)] = max_gas
-    return max_gas
 
-def calculate_max(curr_valve_state, time, pos, gas_so_far, max_gas_so_far):
-    if max_gas_so_far[0] > gas_so_far + estimate_max(curr_valve_state, time): return 0
-    if time <= 1: return 0
-    valves = deepcopy(curr_valve_state)
-    valves = [x for x in valves if x[2] == 'off' and x[1] > 0]   # get the valves which could be opend
-    if len(valves) == 0: return 0
-    valves.sort(key = lambda x: -x[1]) # sort by most promising one
-    d_key = str(valves)
-    if (d_key, pos, time) in calculates: return calculates[(d_key, pos, time)]
-    
-    max_gas = 0
-    for valve in valves:
-        if pos == valve[0]:
-            valve[2] = 'on'
-            gas = (time-1) * valve[1]
-            temp_gas = calculate_max(valves, time-1, pos, gas_so_far + gas, max_gas_so_far)
-            gas += temp_gas
-            if gas > max_gas: max_gas = gas
-            valve[2] = 'off'
-        else:
-            way = get_way(valve[0], pos)
-            if time <= way: continue
-            gas = calculate_max(valves, time-way, valve[0], gas_so_far, max_gas_so_far)
-            if gas > max_gas: max_gas = gas
-    
-    if gas_so_far + max_gas > max_gas_so_far[0]: 
-        max_gas_so_far[0] = gas_so_far + max_gas
-    calculates[(d_key, pos, time)] = max_gas
-    return max_gas
-    
-print(calculate_max(valves, 30, 'AA', 0, max_gas_so_far))
-
-print("--- %s seconds ---" % (time.time() - start_time))
-start_time = time.time()
-
-# Part 2
-parallel_estimates = {}
-parallel_calculates = {}
-max_gas_so_far = [0]
 
 def estimate_parallel_max(curr_valve_state, time1, time2):
     if time1 == time2 == 0: return 0
@@ -156,6 +90,13 @@ def estimate_parallel_max(curr_valve_state, time1, time2):
     parallel_estimates[(d_key, time1, time2)] = max_gas
     return max_gas
 
+def check_skip(d_key, pos1, pos2, time1, time2):
+    for i in range(time1, 31):
+        for j in range(time2, 31):
+            if (d_key, pos1, pos2, i, j) in parallel_calculates: return True
+            if (d_key, pos2, pos1, j, i) in parallel_calculates: return True
+    return False
+
 def calculate_parallel_max(curr_valve_state, time1, time2, pos1, pos2, gas_so_far, max_gas_so_far):
     if max_gas_so_far[0] > gas_so_far + estimate_parallel_max(curr_valve_state, time1, time2): return 0
     if time1 <= 1 and time2 <= 1: return 0
@@ -166,6 +107,8 @@ def calculate_parallel_max(curr_valve_state, time1, time2, pos1, pos2, gas_so_fa
     d_key = str(valves)
     if (d_key, pos1, pos2, time1, time2) in parallel_calculates: return parallel_calculates[(d_key, pos1, pos2, time1, time2)]
     if (d_key, pos2, pos1, time2, time1) in parallel_calculates: return parallel_calculates[(d_key, pos2, pos1, time2, time1)]
+    
+    if check_skip(d_key, pos1, pos2, time1, time2): return 0
     
     max_gas = 0
     for valve in valves:
@@ -190,6 +133,16 @@ def calculate_parallel_max(curr_valve_state, time1, time2, pos1, pos2, gas_so_fa
     parallel_calculates[(d_key, pos1, pos2, time1, time2)] = max_gas
     return max_gas
 
+
+start_time = time.time()
+
+max_gas_so_far = [0]
+print(calculate_parallel_max(valves, 30, 0, 'AA', 'AA', 0, max_gas_so_far))
+
+print("--- %s seconds ---" % (time.time() - start_time))
+start_time = time.time()
+
+max_gas_so_far = [0]
 print(calculate_parallel_max(valves, 26, 26, 'AA', 'AA', 0, max_gas_so_far))
 
 print("--- %s seconds ---" % (time.time() - start_time))
